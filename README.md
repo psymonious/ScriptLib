@@ -7,3 +7,4 @@ A collection of scripts,snippets and links
 ## Chapters
 - [Files and Data](https://github.com/psymonious/ScriptLib/blob/master/FileAndData.md)
 - [Graphical User Interface](https://github.com/psymonious/ScriptLib/blob/master/GUI.md)
+- [Certificates](https://github.com/psymonious/ScriptLib/blob/master/Certificate.md)
