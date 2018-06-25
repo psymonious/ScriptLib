@@ -25,13 +25,10 @@ function Read-SSLCertificate {
     # Create a TCP Socket to the remote endpoint
     $objTcpSocket = New-Object Net.Sockets.TcpClient($RemoteEndpoint, $TcpPort)
 
-    # Check if socket exists otherwhise exit
     if($objTcpSocket) {
-
         #Socket Got connected get the tcp stream ready to read the certificate
         write-Verbose "Successfully Connected to $RemoteEndpoint on $TcpPort"
         $objTcpStream = $objTcpSocket.GetStream()
-    
 
         # Getting detailed information about validation
         $global:RemoteCertificateValidationCallback = [System.Net.Security.RemoteCertificateValidationCallback] {
