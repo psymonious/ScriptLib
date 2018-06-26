@@ -1,6 +1,34 @@
 
 ## Certificate stuff
-### Read and download certificate from remote endpoint
+
+### [ Create selfsigned certificates ]
+
+Self-signed root certificate
+```powershell
+$RootCert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
+-Subject "CN=FOOL-ROOT-CA" `
+-KeyExportPolicy Exportable `
+-HashAlgorithm sha256 -KeyLength 4096 `
+-CertStoreLocation "Cert:\LocalMachine\My" `
+-KeyUsageProperty Sign `
+-KeyUsage CertSign `
+-NotAfter (Get-Date).AddYears(5)
+```
+
+Generate certificates from root (For Server Authentication only) (Not for web server)
+- SAN > -DnsNname -DnsName domain.example.com,anothersubdomain.example.com
+- Other purposes > Adjust the 'TextExtension' Parameter like '2.5.29.37={text}1.3.6.1.5.5.7.3.1,1.3.6.1.5.5.7.3.2' (Server and Client authentication)
+```powershell
+New-SelfSignedCertificate -Type Custom -KeySpec Signature `
+-Subject "CN=dc001.fool.local" -KeyExportPolicy Exportable `
+-HashAlgorithm sha256 -KeyLength 2048 `
+-NotAfter (Get-Date).AddMonths(24) `
+-CertStoreLocation "Cert:\LocalMachine\My" `
+-Signer $RootCert `
+-TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.1")
+```
+<br><br>
+### [ Read and download certificate from remote endpoint ]
 
 I assembled this functino based on several other scripts that had a similar purpose.<br>
 I mainly needed to check what certificate the LDAPS service on a Windows Domain Controller presents.
