@@ -2,36 +2,52 @@
 ## Certificate stuff
 
 ### [ Create selfsigned certificates ]
-
+```diff
+- This is just an example how you can quickly create certificates for a testing environment.
+- Never do this in production and always us an official certificate from a trusted publisher.
+- If you still decide to go the selfsigned way, store the private key of your root and signing certificates in a safe (offline) store.
+```
 Self-signed root certificate
 ```powershell
-$RootCert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
+$RootCert = New-SelfSignedCertificate -Type Custom `
+-KeySpec Signature `
 -Subject "CN=FOOL-ROOT-CA" `
 -KeyExportPolicy Exportable `
--HashAlgorithm sha256 -KeyLength 4096 `
+-HashAlgorithm sha256 `
+-KeyLength 4096 `
 -CertStoreLocation "Cert:\LocalMachine\My" `
 -KeyUsageProperty Sign `
 -KeyUsage CertSign `
 -NotAfter (Get-Date).AddYears(5)
 ```
 
-Generate certificates from root (For Server Authentication only) (Not for web server)
-- SAN > -DnsNname -DnsName domain.example.com,anothersubdomain.example.com
-- Other purposes > Adjust the 'TextExtension' Parameter like '2.5.29.37={text}1.3.6.1.5.5.7.3.1,1.3.6.1.5.5.7.3.2' (Server and Client authentication)
+### Generate certificates from root
+In this case i will create a computer certificate for my host dc001.fool.local<br>
 ```powershell
-New-SelfSignedCertificate -Type Custom -KeySpec Signature `
--Subject "CN=dc001.fool.local" -KeyExportPolicy Exportable `
--HashAlgorithm sha256 -KeyLength 2048 `
+New-SelfSignedCertificate -Type Custom `
+-KeySpec Signature `
+-Subject "CN=dc001.fool.local" `
+-KeyExportPolicy Exportable `
+-HashAlgorithm sha256 `
+-KeyLength 2048 `
 -NotAfter (Get-Date).AddMonths(24) `
 -CertStoreLocation "Cert:\LocalMachine\My" `
 -Signer $RootCert `
 -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.1")
 ```
+
+I can also add some other attribute to make it a SAN certificate or give it other extensions so it can be used for other purposes<br>
+In this case i included an second DNS name and the TextExtension represents "Server and Client Authentication"
+```powershell
+-DnsName dc001.fool.local,ldaps.fool.local
+-TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.1,1.3.6.1.5.5.7.3.2")
+```
+
 <br><br>
 ### [ Read and download certificate from remote endpoint ]
 
-I assembled this functino based on several other scripts that had a similar purpose.<br>
-I mainly needed to check what certificate the LDAPS service on a Windows Domain Controller presents.
+I assembled this function based on several other scripts that had a similar purpose.<br>
+I used this script to verify that a group of servers have the expected certificate mapped to the service.   
 
 ```powershell
 function Read-SSLCertificate {
