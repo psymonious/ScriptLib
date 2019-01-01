@@ -1,5 +1,5 @@
 ## ScriptLib
-A collection of scripts,snippets and links
+A collection of scripts, snippets and links
 
 ## Link Library
 - [Link Library](https://github.com/psymonious/ScriptLib/blob/master/LinkLibrary.md)
